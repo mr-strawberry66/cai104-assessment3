@@ -1,0 +1,139 @@
+# Class representing a node of the maze.
+class Node
+
+    # Initialise the class with a parent node, and the position in the maze, we can set the cost later on.
+    function initialise(this, parent: Node, position: tuple)
+        this.cost = 0
+        this.parent = parent
+        this.position = position
+    end
+end
+
+
+# Class to represent data about the Maze.
+class Maze
+
+    # Initialise the maze with a map of the maze in the form of an array of arrays.
+    function initialise(this, map: array = new array)
+        this.map = map
+        this.heuristic_maze = new array
+        this.start_position = new tuple
+        this.goal_position = new tuple
+        this.size = new tuple
+
+        if this.map.length() > 0
+            this.process_map()
+        end
+    end
+
+    # Find out the heuristic cost of each node in the maze
+    # as well as find the start and goal positions in the maze.
+    function process_map()
+        # Get heuristic cost of the maze
+        for node in maze
+            define cost = abs(node.x - target.x) + abs(node.y - target.y)
+            this.heuristic_maze.append(cost)
+        end
+
+        # Itterate over Y values
+        for y_value in range(0, this.size[1])
+
+            # And X values
+            for x_value in range(0, this.size[0])
+                # Set the node to be the position on the map at the current
+                # Y and X values.
+                define node = this.map[y_value][x_value]
+
+                # find the heuristic cost at the appropriate position.
+                cost = this.heuristic_maze[y_value][x_value]
+
+                if node == 1:
+                    # If the node is a 1, it is a wall and we cannot traverse it.
+                    # We need to set the cost to be too high for the agent to try and
+                    # use that path.
+                    cost = too expensive
+
+                else
+                    # If it is not a wall, calculate the cost to move to the goal position.
+                    define distance_cost = square_root((this.goal_position[0] - x_value) ** 2 + (this.goal_position[1] - y_value) ** 2)
+
+                    # And add it to the existing cost.
+                    cost += distance_cost
+
+                    # If the node is -1, set our start position.
+                    if node == -1
+                        this.start_position = (x_value, y_value)
+
+                    # If the node is 9, set our goal position.
+                    else if node == 9
+                        this.goal_position = (x_value, y_value)
+                    end
+                end
+
+                # Add our cost to the heuristic map for the current node.
+                this.heuristic_maze[x_value][y_value] = cost
+            end
+        end
+    end
+
+
+function main()
+    define maze = Maze(map=[...])
+    define allowed_moves = (
+        (0, -1),  # Up
+        (0, 1),  # Down
+        (-1, 0),  # Left
+        (1, 0),  # Right
+    )
+
+    define wall = 1
+
+    define path = new array
+    define nodes_to_visit = new array
+    define nodes_visited = new array
+
+    define start_node = Node(nil, maze.start)
+    define goal_node = Node(nil, maze.goal)
+
+    nodes_to_visit.append(start_node)
+
+    while nodes_to_visit.length() > 0
+        define current_node = self.nodes_to_visit[0]
+        define current_index = 0
+
+        for i in range(nodes_to_visit.length())
+            node = nodes_to_visit[i]
+
+            if node.cost < current_node.cost
+            current_node = node
+            current_index = i
+        end
+
+        nodes_to_visit.pop(current_index)
+        nodes_visited.append(current_node)
+
+        if current_node.position == goal_node.position
+            print("Completed. Cost was {{current_node.cost}}")
+        end
+
+        for move in allowed_moves
+            # Calculate new position by adding the current x and y to the move taken's x and y movement values
+            define next_position = (current_node.position[0] + move[0], current_node.position[1] + move[1])
+
+            # Get cost by searching the heuristic maze at the correct x and y positions
+            define cost = maze.heuristic_maze[next_position[1]][next_position[0]]
+
+            if cost is too expensive
+                go to the next item in the loop
+            end
+
+            define child = Node(current_node, next_position)
+
+            child.cost = cost + current_node.cost
+
+            if child is not in to_visit list and the toal cost is lower, add the child node
+                nodes_to_visit.append(child)
+            end
+        end
+    end
+end
